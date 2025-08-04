@@ -24,20 +24,44 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Counter.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Error.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/AdminDashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pbkRhc2hib2FyZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Contact.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb250YWN0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Weather.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/EmployeeDashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFbXBsb3llZURhc2hib2FyZC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbmRleC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/ReceptionistDashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZWNlcHRpb25pc3REYXNoYm9hcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZWdpc3Rlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Services.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXJ2aWNlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Pages/Testimonials.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUZXN0aW1vbmlhbHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Routes.razor]
@@ -51,7 +75,3 @@ build_metadata.AdditionalFiles.CssScope =
 [C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-4nfpjvwypv
-
-[C:/Users/ethan/source/repos/FargoSpringsSpa/FargoSpringsSpa/Components/Layout/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-8q9sl3uydi
