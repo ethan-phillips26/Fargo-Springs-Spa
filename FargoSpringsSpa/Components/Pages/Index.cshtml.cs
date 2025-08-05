@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using FargoSpringsSpa.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using FargoSpringsSpa.Data;
-using FargoSpringsSpa.Models;
 
 namespace FargoSpringsSpa.Components.Pages
 {
@@ -19,7 +13,7 @@ namespace FargoSpringsSpa.Components.Pages
             _context = context;
         }
 
-        public IList<Booking> Booking { get;set; } = default!;
+        public IList<Booking> Booking { get; set; } = default!;
 
         public async Task OnGetAsync()
         {

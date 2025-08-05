@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewEngines;
-
-namespace FargoSpringsSpa.Models
+﻿namespace FargoSpringsSpa.Models
 {
     public class User
     {
