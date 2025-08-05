@@ -1,39 +1,67 @@
 ﻿@page "/register"
 
+@using System.ComponentModel.DataAnnotations
+@using FargoSpringsSpa.Data
+@using FargoSpringsSpa.Models
+@inject NavigationManager NavigationManager
+@inject FargoSpringsSpaContext DbContext
+@rendermode InteractiveServer
+
+
 <PageTitle>Register - Fargo Springs Spa</PageTitle>
 
-<link href="css/login.css" rel="stylesheet" />
+<EditForm Model="@registerModel" OnValidSubmit="HandleValidSubmit" FormName="registerForm">
 
-<div class="container d-flex flex-column justify-content-center align-items-center mt-5">
-    <div class="d-flex align-items-center mb-4 mt-5">
-        <h2 class="mb-0">Register An Account With Us!</h2>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="nameInput" class="form-label">Full Name</label>
+        <InputText id="nameInput" class="form-control" @bind-Value="registerModel.Name" />
+        <ValidationMessage For="@(() => registerModel.Name)" />
     </div>
 
-    <div class="card p-4 mt-2">
-        <form>
-            <div class="mb-3">
-                <label for="nameInput" class="form-label">Full Name</label>
-                <input id="nameInput" type="name" class="form-control" placeholder="Enter your full name" />
-            </div>
-
-            <div class="mb-3">
-                <label for="emailInput" class="form-label">Email address</label>
-                <input id="emailInput" type="email" class="form-control" placeholder="Enter your email" />
-            </div>
-
-            <div class="mb-4">
-                <label for="passwordInput" class="form-label">Password</label>
-                <input id="passwordInput" type="password" class="form-control" placeholder="Enter your password" />
-            </div>
-
-            <div class="mb-4">
-                <label for="passwordInput" class="form-label">Password</label>
-                <input id="passwordInput" type="password" class="form-control" placeholder="Confirm your password" />
-            </div>
-
-
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+    <div class="mb-3">
+        <label for="emailInput" class="form-label">Email address</label>
+        <InputText id="emailInput" type="email" class="form-control" @bind-Value="registerModel.Email" />
+        <ValidationMessage For="@(() => registerModel.Email)" />
     </div>
-</div>
 
+    <div class="mb-3">
+        <label for="passwordInput" class="form-label">Password</label>
+        <InputText id="passwordInput" type="password" class="form-control" @bind-Value="registerModel.Password" />
+        <ValidationMessage For="@(() => registerModel.Password)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="confirmPasswordInput" class="form-label">Confirm Password</label>
+        <InputText id="confirmPasswordInput" type="password" class="form-control" @bind-Value="registerModel.ConfirmPassword" />
+        <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+@code {
+    private RegisterViewModel registerModel = new();
+
+    private async Task HandleValidSubmit()
+    {
+        // Password is not hashed right now. We can add this later if we have time
+        var hashedPassword = registerModel.Password; // Replace with real hashing
+
+        var newUser = new User
+        {
+            Name = registerModel.Name,
+            Email = registerModel.Email,
+            PasswordHash = hashedPassword,
+            Role = "Customer" // Default user role. Admin can change the role of users.
+        };
+
+        DbContext.User.Add(newUser);
+        await DbContext.SaveChangesAsync();
+
+        NavigationManager.NavigateTo("/login");
+    }
+
+}
