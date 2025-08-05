@@ -1,7 +1,6 @@
 using FargoSpringsSpa.Components;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using FargoSpringsSpa.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContextFactory<FargoSpringsSpaContext>(options =>
