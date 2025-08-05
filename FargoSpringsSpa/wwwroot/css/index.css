@@ -1,0 +1,11 @@
+﻿.hero-section {
+    background: url('/images/home.jpg') center center/cover no-repeat;
+    height: 450px;
+    position: relative;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    width: 90%;
+}
