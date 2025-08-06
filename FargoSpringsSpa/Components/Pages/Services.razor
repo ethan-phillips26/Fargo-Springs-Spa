@@ -1,7 +1,323 @@
 ﻿@page "/services"
+@using Microsoft.EntityFrameworkCore
+@using FargoSpringsSpa.Models
+@inject IDbContextFactory<FargoSpringsSpa.Data.FargoSpringsSpaContext> DbFactory
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
-<h3>Services</h3>
+<PageTitle>Services - Fargo Springs Spa</PageTitle>
+
+<link href="css/services.css" rel="stylesheet" />
+
+<div class="container-fluid py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 text-black fw-bold mb-3">Our Spa Services</h1>
+            <p class="lead text-muted">Relax, rejuvenate, and restore your mind, body, and spirit</p>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading services...</span>
+            </div>
+            <p class="mt-3">Loading our services...</p>
+        </div>
+    }
+    else if (!services.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-spa fa-3x text-muted mb-3"></i>
+            <h4>No Services Available</h4>
+            <p class="text-muted">Please check back later for our service offerings.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Services Grid -->
+        <div class="row g-4">
+            @foreach (var service in services)
+            {
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="card h-100 shadow-sm border-0 service-card">
+                        <div class="card-header text-white text-center p-4">
+                            <i class="fas fa-spa fa-3x mb-3"></i>
+                            <h4 class="card-title mb-0 fw-bold">@service.Name</h4>
+                        </div>
+                        <div class="card-body d-flex flex-column p-4">
+                            <p class="card-text mb-3 text-white">@service.Description</p>
+
+                            <div class="service-details mb-4 flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-clock me-2"></i>
+                                    <small class="text-white">Duration: @service.DurationInMinutes minutes</small>
+                                </div>
+                            </div>
+
+                            <div class="text-center mb-3">
+                                <span class="h4 text-white fw-bold">$@service.Price.ToString("F2")</span>
+                            </div>
+
+                            <button class="btn btn-primary btn-lg w-100 schedule-btn"
+                                    @onclick="() => ScheduleAppointment(service.Id)">
+                                <i class="fas fa-calendar-plus me-2"></i>
+                                Book Appointment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Booking Modal -->
+    @if (showBookingModal)
+    {
+        <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-hidden="false">
+            <div class="modal-backdrop fade show"></div>
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark-green text-white">
+                        <h5 class="modal-title">
+                            Book Your Appointment
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" @onclick="CloseModal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        @if (selectedService != null)
+                        {
+                            <div class="text-center mb-4 p-3 bg-light rounded">
+                                <h6 class="text-primary mb-1">@selectedService.Name</h6>
+                                <p class="text-muted small mb-1">@selectedService.Description</p>
+                                <div class="d-flex justify-content-center align-items-center gap-3">
+                                    <span class="badge bg-primary">$@selectedService.Price.ToString("F2")</span>
+                                    <span class="badge bg-info">@selectedService.DurationInMinutes min</span>
+                                </div>
+                            </div>
+                        }
+
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Preferred Date *</label>
+                                    <input type="date" class="form-control" @bind="bookingForm.PreferredDate"
+                                           min="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Preferred Time *</label>
+                                    <select class="form-control" @bind="bookingForm.PreferredTime" required>
+                                        <option value="">Select time...</option>
+                                        @foreach (var time in availableTimes)
+                                        {
+                                            <option value="@time">@time</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Special Requests or Notes</label>
+                                    <textarea class="form-control" rows="3" @bind="bookingForm.Notes"
+                                              placeholder="Any special requests, allergies, or preferences?"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-outline-secondary" @onclick="CloseModal">Cancel</button>
+                        <button type="button" class="btn btn-primary" @onclick="SubmitBooking" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            else
+                            {
+                                <i class="fas fa-paper-plane me-2"></i>
+                            }
+                            Request Booking
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (showSuccessMessage)
+{
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1070;">
+        <div class="toast show bg-success text-white border-0">
+            <div class="toast-body d-flex align-items-center">
+                <i class="fas fa-check-circle me-2 fa-lg"></i>
+                <div>
+                    <strong>Success!</strong><br>
+                    <small>Booking request submitted! We'll contact you within 24 hours to confirm your appointment.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
+    private List<Service> services = new();
+    private bool isLoading = true;
+    private bool showBookingModal = false;
+    private bool showSuccessMessage = false;
+    private bool isSubmitting = false;
+    private Service? selectedService;
+    private BookingRequest bookingForm = new();
+    private List<string> availableTimes = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadServices();
+        LoadAvailableTimes();
+    }
+
+    private async Task LoadServices()
+    {
+        isLoading = true;
+        try
+        {
+            using var context = DbFactory.CreateDbContext();
+            services = await context.Service.OrderBy(s => s.Name).ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log error or show error message
+            Console.WriteLine($"Error loading services: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void LoadAvailableTimes()
+    {
+        availableTimes = new List<string>
+        {
+            "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
+            "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"
+        };
+    }
+
+    private void ScheduleAppointment(int serviceId)
+    {
+        selectedService = services.FirstOrDefault(s => s.Id == serviceId);
+        if (selectedService != null)
+        {
+            bookingForm = new BookingRequest { ServiceId = serviceId };
+            showBookingModal = true;
+            StateHasChanged();
+        }
+    }
+
+    private void CloseModal()
+    {
+        showBookingModal = false;
+        bookingForm = new BookingRequest();
+        isSubmitting = false;
+        selectedService = null;
+        StateHasChanged();
+    }
+
+    private async Task SubmitBooking()
+    {
+        if (string.IsNullOrWhiteSpace(bookingForm.PreferredTime))
+        {
+            return;
+        }
+
+        isSubmitting = true;
+        StateHasChanged();
+
+        try
+        {
+            using var context = DbFactory.CreateDbContext();
+
+            // Parse the appointment date and time
+            var appointmentDateTime = CombineDateAndTime(bookingForm.PreferredDate, bookingForm.PreferredTime);
+
+            // Create the booking
+            var booking = new Booking
+            {
+                UserId = @UserSession.GetUserId()!,
+                ServiceId = bookingForm.ServiceId,
+                AppointmentDate = appointmentDateTime,
+                Status = "Requested", // Find better way to do this
+                Notes = bookingForm.Notes ?? string.Empty
+            };
+
+            context.Booking.Add(booking);
+            await context.SaveChangesAsync();
+
+            showBookingModal = false;
+            showSuccessMessage = true;
+            bookingForm = new BookingRequest();
+            selectedService = null;
+
+            StateHasChanged();
+
+            // Hide success message after 5 seconds
+            _ = Task.Delay(5000).ContinueWith(t =>
+            {
+                showSuccessMessage = false;
+                InvokeAsync(StateHasChanged);
+            });
+        }
+        catch (Exception ex)
+        {
+            // Handle error - show error message
+            Console.WriteLine($"Error submitting booking: {ex.Message}");
+            // You might want to show an error message to the user
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    // Helper method to combine date and time
+    private DateTime CombineDateAndTime(DateTime date, string timeString)
+    {
+        if (TimeSpan.TryParse(ConvertTo24Hour(timeString), out var time))
+        {
+            return date.Date.Add(time);
+        }
+
+        // Default to 9 AM if parsing fails
+        return date.Date.AddHours(9);
+    }
+
+    // Helper method to convert 12-hour format to 24-hour format
+    private string ConvertTo24Hour(string time12Hour)
+    {
+        return time12Hour.ToUpper() switch
+        {
+            "9:00 AM" => "09:00",
+            "10:00 AM" => "10:00",
+            "11:00 AM" => "11:00",
+            "12:00 PM" => "12:00",
+            "1:00 PM" => "13:00",
+            "2:00 PM" => "14:00",
+            "3:00 PM" => "15:00",
+            "4:00 PM" => "16:00",
+            "5:00 PM" => "17:00",
+            _ => "09:00" // Default fallback
+        };
+    }
+
+    public class BookingRequest
+    {
+        public int ServiceId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public DateTime PreferredDate { get; set; } = DateTime.Today.AddDays(1);
+        public string PreferredTime { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
+    }
 }

@@ -1,0 +1,23 @@
+﻿.card {
+    background-color: #8BA49A;
+}
+
+.modal-backdrop {
+    background-color: rgba(0,0,0,0.5) !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+
+.modal-dialog {
+    z-index: 1060 !important;
+}
+
+.toast {
+    z-index: 1070 !important;
+}
+
+.bg-dark-green {
+    background-color: #3B6255;
+}
