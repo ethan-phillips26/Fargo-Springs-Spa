@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using FargoSpringsSpa.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace FargoSpringsSpa.Data
 {
     public class FargoSpringsSpaContext : DbContext
     {
-        public FargoSpringsSpaContext (DbContextOptions<FargoSpringsSpaContext> options)
+        public FargoSpringsSpaContext(DbContextOptions<FargoSpringsSpaContext> options)
             : base(options)
         {
         }

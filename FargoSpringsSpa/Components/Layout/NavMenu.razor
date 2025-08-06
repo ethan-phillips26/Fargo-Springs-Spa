@@ -1,4 +1,8 @@
-﻿<nav class="navbar navbar-expand-lg navbar-light bg-light">
+﻿@using FargoSpringsSpa.Models
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2">
             <img src="images/logo.png" alt="Logo" height="40" />
@@ -6,15 +10,48 @@
                 Fargo Springs Spa
             </div>
         </div>
-
-
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
             <NavLink href="/" class="btn btn-primary shadow">Home</NavLink>
             <NavLink href="/services" class="btn btn-primary shadow">Services</NavLink>
             <NavLink href="/testimonials" class="btn btn-primary shadow">Testimonials</NavLink>
             <NavLink href="/contact" class="btn btn-primary shadow">Contact</NavLink>
-            <NavLink href="/login" class="btn btn-primary shadow">Login</NavLink>
-            <NavLink href="/register" class="btn btn-primary shadow">Register</NavLink>
+
+            @if (UserSession.IsLoggedIn)
+            {
+                <!-- Show user specific options when logged in -->
+                @if (UserSession.IsAdmin)
+                {
+                    <NavLink href="/admin" class="btn btn-warning shadow">Admin Panel</NavLink>
+                }
+                else
+                {
+                    <NavLink href="/appointments" class="btn btn-primary shadow">My Appointments</NavLink>
+                    <NavLink href="/book" class="btn btn-primary shadow">Book Now</NavLink>
+                }
+
+                <button class="btn btn-primary shadow me-2" @onclick="HandleLogout">
+                    Logout
+                </button>
+
+                <span class="navbar-text text-white">
+                    Hello, @UserSession.GetUserName()!
+                </span>
+            }
+            else
+            {
+                <!-- Show login/register when not logged in -->
+                <NavLink href="/login" class="btn btn-primary shadow">Login</NavLink>
+                <NavLink href="/register" class="btn btn-primary shadow">Register</NavLink>
+            }
         </div>
     </div>
 </nav>
+
+@code {
+    private void HandleLogout()
+    {
+        UserSession.Logout();
+        NavigationManager.NavigateTo("/");
+        StateHasChanged();
+    }
+}

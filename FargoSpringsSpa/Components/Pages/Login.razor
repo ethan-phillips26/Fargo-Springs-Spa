@@ -1,28 +1,99 @@
 ﻿@page "/login"
-
+@using System.ComponentModel.DataAnnotations
+@using FargoSpringsSpa.Data
+@using FargoSpringsSpa.Models
+@inject NavigationManager NavigationManager
+@inject FargoSpringsSpaContext DbContext
+@rendermode InteractiveServer
 <PageTitle>Login - Fargo Springs Spa</PageTitle>
-
 <link href="css/login.css" rel="stylesheet" />
 
 <div class="container d-flex flex-column justify-content-center align-items-center mt-5">
     <div class="d-flex align-items-center mb-4 mt-5">
         <h2 class="mb-0">Login!</h2>
     </div>
-
     <div class="card p-4 mt-2">
-        <form>
+        <EditForm Model="@loginModel" OnValidSubmit="HandleValidSubmit" FormName="loginForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
             <div class="mb-3">
                 <label for="emailInput" class="form-label">Email address</label>
-                <input id="emailInput" type="email" class="form-control" placeholder="Enter your email" />
+                <InputText id="emailInput" type="email" class="form-control" @bind-Value="loginModel.Email" placeholder="Enter your email" />
+                <ValidationMessage For="@(() => loginModel.Email)" />
             </div>
-
             <div class="mb-4">
                 <label for="passwordInput" class="form-label">Password</label>
-                <input id="passwordInput" type="password" class="form-control" placeholder="Enter your password" />
+                <InputText id="passwordInput" type="password" class="form-control" @bind-Value="loginModel.Password" placeholder="Enter your password" />
+                <ValidationMessage For="@(() => loginModel.Password)" />
             </div>
-
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <text>Logging in...</text>
+                }
+                else
+                {
+                    <text>Login</text>
+                }
+            </button>
+        </EditForm>
     </div>
 </div>
 
+@code {
+    private LoginViewModel loginModel = new();
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+
+    private async Task HandleValidSubmit()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            // Find user by email
+            var user = DbContext.User.FirstOrDefault(u => u.Email == loginModel.Email);
+            if (user == null)
+            {
+                errorMessage = "Invalid email or password.";
+                return;
+            }
+
+            // Password is not hashed yet, so compare directly
+            if (user.PasswordHash != loginModel.Password)
+            {
+                errorMessage = "Invalid email or password.";
+                return;
+            }
+
+            // Login successful, save to user session
+            UserSession.Login(user);
+
+            // Redirect based on user role
+            if (user.Role == "Admin")
+            {
+                NavigationManager.NavigateTo("/admin", forceLoad: true);
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/", forceLoad: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred during login. Please try again.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
