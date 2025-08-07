@@ -1,0 +1,126 @@
+﻿@page "/appointments"
+@using Microsoft.EntityFrameworkCore
+@using FargoSpringsSpa.Models
+@using FargoSpringsSpa.Data
+@inject IDbContextFactory<FargoSpringsSpaContext> DbFactory
+@inject NavigationManager Nav
+
+<PageTitle>Appointments - Fargo Springs Spa</PageTitle>
+
+<div class="container-fluid py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 text-black fw-bold mb-3">My Appointments</h1>
+            <p class="lead text-muted">Review and manage your upcoming spa bookings</p>
+        </div>
+    </div>
+
+    @if (!UserSession.IsLoggedIn)
+    {
+        <div class="alert alert-warning text-center">
+            Please <a href="/login">log in</a> to view your appointments.
+        </div>
+    }
+    else if (userBookings == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading appointments...</span>
+            </div>
+            <p class="mt-3">Fetching your appointments...</p>
+        </div>
+    }
+    else if (!userBookings.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+            <h4>No Appointments Found</h4>
+            <p class="text-muted">You haven’t scheduled any spa visits yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var booking in userBookings)
+            {
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-dark text-white text-center p-3">
+                            <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                            <h5 class="card-title mb-0 fw-bold">@booking.Service?.Name</h5>
+                        </div>
+                        <div class="card-body bg-light p-4">
+                            <p class="card-text text-dark mb-2">
+                                <i class="fas fa-user-circle me-2 text-secondary"></i>
+                                <strong>Employee ID:</strong> @booking.UserId
+                            </p>
+                            <p class="card-text text-dark mb-2">
+                                <i class="fas fa-clock me-2 text-secondary"></i>
+                                <strong>Date:</strong> @booking.AppointmentDate.ToString("MMMM dd, yyyy - h:mm tt")
+                            </p>
+                            <p class="card-text text-dark mb-2">
+                                <i class="fas fa-info-circle me-2 text-secondary"></i>
+                                <strong>Status:</strong> <span class="badge bg-info text-dark">@booking.Status</span>
+                            </p>
+                            @if (!string.IsNullOrWhiteSpace(booking.Notes))
+                            {
+                                <p class="card-text text-muted small">
+                                    <i class="fas fa-sticky-note me-1"></i>
+                                    <em>@booking.Notes</em>
+                                </p>
+                            }
+
+                            <button class="btn btn-danger w-100 mt-3"
+                                    @onclick="() => DeleteBooking(booking.Id)">
+                                <i class="fas fa-trash-alt me-2"></i>
+                                Delete Appointment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Booking> userBookings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserSession.IsLoggedIn)
+            return;
+
+        try
+        {
+            int userId = UserSession.GetUserId();
+
+            using var db = await DbFactory.CreateDbContextAsync();
+
+            userBookings = await db.Booking
+                .Where(b => b.UserId == userId)
+                .Include(b => b.Service)
+                .OrderBy(b => b.AppointmentDate)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine("Error loading appointments: " + ex.Message);
+        }
+    }
+
+    private async Task DeleteBooking(int bookingId)
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+
+        var booking = await db.Booking.FindAsync(bookingId);
+        if (booking != null && booking.UserId == UserSession.GetUserId())
+        {
+            db.Booking.Remove(booking);
+            await db.SaveChangesAsync();
+
+            userBookings = userBookings.Where(b => b.Id != bookingId).ToList();
+            StateHasChanged();
+        }
+    }
+}
