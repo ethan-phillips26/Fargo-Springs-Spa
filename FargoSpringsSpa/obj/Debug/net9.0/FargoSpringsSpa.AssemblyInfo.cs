@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FargoSpringsSpa")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9fc2cca3e63efe4bb19bb5dbbb3b510001858542")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0ee1d7161848da300a3439d24eb992e322021b6")]
 [assembly: System.Reflection.AssemblyProductAttribute("FargoSpringsSpa")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FargoSpringsSpa")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
