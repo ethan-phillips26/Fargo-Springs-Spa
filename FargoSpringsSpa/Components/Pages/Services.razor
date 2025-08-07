@@ -338,7 +338,6 @@
     private async Task SaveBooking()
     {
         using var context = DbFactory.CreateDbContext();
-
         var appointmentDateTime = DateTime.Parse($"{selectedDate:yyyy-MM-dd} {selectedTime}");
 
         var booking = new Booking
@@ -347,6 +346,7 @@
             ServiceId = selectedService!.Id,
             AppointmentDate = appointmentDateTime,
             Status = "Requested",
+            EmployeeId = selectedEmployeeId,
             Notes = notes
         };
 
@@ -356,8 +356,6 @@
         CloseModal();
         showSuccessMessage = true;
         StateHasChanged();
-
-
         await Task.Delay(3000);
         showSuccessMessage = false;
         StateHasChanged();

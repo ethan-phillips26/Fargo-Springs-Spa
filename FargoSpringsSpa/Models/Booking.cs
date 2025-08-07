@@ -7,7 +7,7 @@
         public User User { get; set; }
         public int ServiceId { get; set; }
         public Service Service { get; set; }
-
+        public int EmployeeId { get; set; }
         public DateTime AppointmentDate { get; set; }
         public string Status { get; set; }
 
