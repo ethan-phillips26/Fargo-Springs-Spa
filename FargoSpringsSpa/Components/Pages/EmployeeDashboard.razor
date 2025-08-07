@@ -1,7 +1,196 @@
-﻿@page "/employeeDashboard"
+﻿@page "/employee"
+@using System.ComponentModel.DataAnnotations
+@using FargoSpringsSpa.Data
+@using FargoSpringsSpa.Models
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavigationManager
+@inject FargoSpringsSpaContext DbContext
+@rendermode InteractiveServer
 
-<h3>EmployeeDashboard</h3>
+<div class="container">
+    <h2>Update Your Availability</h2>
+
+    <p>Hello, @UserSession.GetUserName()!</p>
+
+    <div class="card">
+        <div class="card-body">
+            <form>
+                <h4>Working Hours</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Start Time:</label>
+                        <input type="time" value="@startTime.ToString("HH:mm")" @onchange="OnStartTimeChanged" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">End Time:</label>
+                        <input type="time" value="@endTime.ToString("HH:mm")" @onchange="OnEndTimeChanged" class="form-control" />
+
+                    </div>
+                </div>
+
+                <h4>Days Available</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="monday" id="monday">
+                            <label class="form-check-label" for="monday">Monday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="tuesday" id="tuesday">
+                            <label class="form-check-label" for="tuesday">Tuesday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="wednesday" id="wednesday">
+                            <label class="form-check-label" for="wednesday">Wednesday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="thursday" id="thursday">
+                            <label class="form-check-label" for="thursday">Thursday</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="friday" id="friday">
+                            <label class="form-check-label" for="friday">Friday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="saturday" id="saturday">
+                            <label class="form-check-label" for="saturday">Saturday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="sunday" id="sunday">
+                            <label class="form-check-label" for="sunday">Sunday</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" @onclick="SaveAvailability" class="btn btn-primary" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span>Saving...</span>
+                    }
+                    else
+                    {
+                        <span>Save</span>
+                    }
+                </button>
+
+                @if (showMessage)
+                {
+                    <div class="alert alert-success mt-3">
+                        Availability saved successfully!
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+</div>
 
 @code {
+    private DateTime startTime = DateTime.Today.AddHours(9);
+    private DateTime endTime = DateTime.Today.AddHours(17);
 
+    private bool monday = false;
+    private bool tuesday = false;
+    private bool wednesday = false;
+    private bool thursday = false;
+    private bool friday = false;
+    private bool saturday = false;
+    private bool sunday = false;
+
+    private bool showMessage = false;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadExistingAvailability();
+    }
+
+    private async Task LoadExistingAvailability()
+    {
+        try
+        {
+            int employeeId = UserSession.GetUserId();
+            var employee = await DbContext.Employee.FindAsync(employeeId);
+
+            if (employee?.Availability != null)
+            {
+                var existingAvailability = employee.Availability;
+                startTime = DateTime.Today.Add(existingAvailability.StartTime.ToTimeSpan());
+                endTime = DateTime.Today.Add(existingAvailability.EndTime.ToTimeSpan());
+                monday = existingAvailability.Monday;
+                tuesday = existingAvailability.Tuesday;
+                wednesday = existingAvailability.Wednesday;
+                thursday = existingAvailability.Thursday;
+                friday = existingAvailability.Friday;
+                saturday = existingAvailability.Saturday;
+                sunday = existingAvailability.Sunday;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading availability: {ex.Message}");
+        }
+    }
+
+
+    // Need to convert to string and back because values keep getting reset
+    private void OnStartTimeChanged(ChangeEventArgs e)
+    {
+        if (TimeSpan.TryParse(e.Value?.ToString(), out var ts))
+        {
+            startTime = DateTime.Today.Add(ts);
+        }
+    }
+
+    private void OnEndTimeChanged(ChangeEventArgs e)
+    {
+        if (TimeSpan.TryParse(e.Value?.ToString(), out var ts))
+        {
+            endTime = DateTime.Today.Add(ts);
+        }
+    }
+
+
+    private async Task SaveAvailability()
+    {
+        Console.WriteLine("SAVE");
+        if (isLoading) return;
+
+        isLoading = true;
+
+        int employeeId = UserSession.GetUserId();
+
+        var availability = await DbContext.EmployeeAvailability
+        .FirstOrDefaultAsync(ea => ea.Id == employeeId);
+
+
+        availability.StartTime = TimeOnly.FromDateTime(startTime);
+        availability.EndTime = TimeOnly.FromDateTime(endTime);
+        availability.Monday = monday;
+        availability.Tuesday = tuesday;
+        availability.Wednesday = wednesday;
+        availability.Thursday = thursday;
+        availability.Friday = friday;
+        availability.Saturday = saturday;
+        availability.Sunday = sunday;
+            
+
+            // Save to database
+            await DbContext.SaveChangesAsync();
+
+            // Show success message
+            showMessage = true;
+
+            // Hide message after 3 seconds
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(3000);
+                showMessage = false;
+                await InvokeAsync(StateHasChanged);
+            });
+        
+            isLoading = false;
+        
+    }
 }
