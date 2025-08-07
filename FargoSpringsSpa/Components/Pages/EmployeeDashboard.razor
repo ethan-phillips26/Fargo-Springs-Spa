@@ -84,6 +84,51 @@
             </form>
         </div>
     </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4>Your Upcoming Bookings</h4>
+
+            @if (upcomingBookings.Count == 0)
+            {
+                <p>Loading bookings...</p>
+            }
+            else if (!upcomingBookings.Any())
+            {
+                <p>You have no upcoming bookings.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Service</th>
+                                <th>Customer</th>
+                                <th>Duration</th>
+                                <th>Price</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var booking in upcomingBookings)
+                            {
+                                <tr>
+                                    <td>@booking.AppointmentDate.ToString("MMM dd, yyyy h:mm tt")</td>
+                                    <td>@booking.Service.Name</td>
+                                    <td>@booking.User.Name</td>
+                                    <td>@booking.Service.DurationInMinutes min</td>
+                                    <td>$@booking.Service.Price.ToString("F2")</td>
+                                    <td>@(string.IsNullOrEmpty(booking.Notes) ? "-" : booking.Notes)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
 @code {
@@ -101,9 +146,12 @@
     private bool showMessage = false;
     private bool isLoading = false;
 
+    private List<Booking> upcomingBookings = new List<Booking>();
+
     protected override async Task OnInitializedAsync()
     {
         await LoadExistingAvailability();
+        await LoadUpcomingBookings();
     }
 
     private async Task LoadExistingAvailability()
@@ -133,6 +181,21 @@
         }
     }
 
+    private async Task LoadUpcomingBookings()
+    {
+            int employeeId = UserSession.GetUserId();
+            var today = DateTime.Today;
+
+            upcomingBookings = await DbContext.Booking
+                .Include(b => b.Service)
+                .Include(b => b.User)
+                .Where(b => b.EmployeeId == employeeId && b.AppointmentDate >= today)
+                .OrderBy(b => b.AppointmentDate)
+                .ToListAsync();
+
+
+            StateHasChanged();
+    }
 
     // Need to convert to string and back because values keep getting reset
     private void OnStartTimeChanged(ChangeEventArgs e)
@@ -151,10 +214,8 @@
         }
     }
 
-
     private async Task SaveAvailability()
     {
-        Console.WriteLine("SAVE");
         if (isLoading) return;
 
         isLoading = true;
@@ -163,7 +224,6 @@
 
         var availability = await DbContext.EmployeeAvailability
         .FirstOrDefaultAsync(ea => ea.Id == employeeId);
-
 
         availability.StartTime = TimeOnly.FromDateTime(startTime);
         availability.EndTime = TimeOnly.FromDateTime(endTime);
@@ -174,23 +234,19 @@
         availability.Friday = friday;
         availability.Saturday = saturday;
         availability.Sunday = sunday;
-            
 
-            // Save to database
-            await DbContext.SaveChangesAsync();
+        await DbContext.SaveChangesAsync();
 
-            // Show success message
-            showMessage = true;
+        showMessage = true;
 
-            // Hide message after 3 seconds
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(3000);
-                showMessage = false;
-                await InvokeAsync(StateHasChanged);
-            });
-        
-            isLoading = false;
-        
+        // Hide message after 3 seconds
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            showMessage = false;
+            await InvokeAsync(StateHasChanged);
+        });
+
+        isLoading = false;
     }
 }
