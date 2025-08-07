@@ -4,6 +4,7 @@ using FargoSpringsSpa.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FargoSpringsSpa.Migrations
 {
     [DbContext(typeof(FargoSpringsSpaContext))]
-    partial class FargoSpringsSpaContextModelSnapshot : ModelSnapshot
+    [Migration("20250807021934_EmployeeAvailability")]
+    partial class EmployeeAvailability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
