@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("8671ba8e-781a-49f2-9d8f-991b1c62f119")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("FargoSpringsSpa")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+317d0fd02428566a8982f7c76c697fab8dcaac2e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0ee1d7161848da300a3439d24eb992e322021b6")]
 [assembly: System.Reflection.AssemblyProductAttribute("FargoSpringsSpa")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FargoSpringsSpa")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
