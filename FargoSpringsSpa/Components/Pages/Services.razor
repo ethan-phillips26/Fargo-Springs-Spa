@@ -7,65 +7,46 @@
 
 <PageTitle>Services - Fargo Springs Spa</PageTitle>
 
-<link href="css/services.css" rel="stylesheet" />
-
-<div class="container-fluid py-5">
-    <div class="row mb-5">
-        <div class="col-12 text-center">
-            <h1 class="display-4 text-black fw-bold mb-3">Our Spa Services</h1>
-            <p class="lead text-muted">Relax, rejuvenate, and restore your mind, body, and spirit</p>
-        </div>
+<div class="services-container">
+    <div class="services-header">
+        <h1>Our Spa Services</h1>
+        <p class="services-subtitle">Relax, rejuvenate, and restore your mind, body, and spirit</p>
     </div>
 
     @if (isLoading)
     {
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading services...</span>
-            </div>
-            <p class="mt-3">Loading our services...</p>
-        </div>
-    }
-    else if (!services.Any())
-    {
-        <div class="text-center py-5">
-            <i class="fas fa-spa fa-3x text-muted mb-3"></i>
-            <h4>No Services Available</h4>
-            <p class="text-muted">Please check back later for our service offerings.</p>
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading our services...</p>
         </div>
     }
     else
     {
-        <!-- Services Grid -->
-        <div class="row g-4">
-            @foreach (var service in services)
+        <div class="services-grid">
+            @foreach (var service in displayServices)
             {
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="card h-100 shadow-sm border-0 service-card">
-                        <div class="card-header text-white text-center p-4">
-                            <i class="fas fa-spa fa-3x mb-3"></i>
-                            <h4 class="card-title mb-0 fw-bold">@service.Name</h4>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <p class="card-text mb-3 text-white">@service.Description</p>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <span class="icon">@GetServiceIcon(service.Name)</span>
+                    </div>
+                    <div class="service-content">
+                        <h3 class="service-name">@service.Name</h3>
+                        <p class="service-description">@service.Description</p>
 
-                            <div class="service-details mb-4 flex-grow-1">
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="fas fa-clock me-2"></i>
-                                    <small class="text-white">Duration: @service.DurationInMinutes minutes</small>
-                                </div>
+                        <div class="service-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Duration:</span>
+                                <span class="detail-value">@service.DurationInMinutes minutes</span>
                             </div>
-
-                            <div class="text-center mb-3">
-                                <span class="h4 text-white fw-bold">$@service.Price.ToString("F2")</span>
+                            <div class="detail-item price-item">
+                                <span class="service-price">$@service.Price.ToString("F2")</span>
                             </div>
-
-                            <button class="btn btn-primary btn-lg w-100 schedule-btn"
-                                    @onclick="() => ScheduleAppointment(service.Id)">
-                                <i class="fas fa-calendar-plus me-2"></i>
-                                Book Appointment
-                            </button>
                         </div>
+
+                        <button class="btn btn-primary service-book-btn"
+                                @onclick="() => ScheduleAppointment(service.Id)">
+                            Book Appointment
+                        </button>
                     </div>
                 </div>
             }
@@ -75,68 +56,59 @@
     <!-- Booking Modal -->
     @if (showBookingModal)
     {
-        <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-hidden="false">
-            <div class="modal-backdrop fade show"></div>
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-dark-green text-white">
-                        <h5 class="modal-title">
-                            Book Your Appointment
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" @onclick="CloseModal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        @if (selectedService != null)
-                        {
-                            <div class="text-center mb-4 p-3 bg-light rounded">
-                                <h6 class="text-primary mb-1">@selectedService.Name</h6>
-                                <p class="text-muted small mb-1">@selectedService.Description</p>
-                                <div class="d-flex justify-content-center align-items-center gap-3">
-                                    <span class="badge bg-primary">$@selectedService.Price.ToString("F2")</span>
-                                    <span class="badge bg-info">@selectedService.DurationInMinutes min</span>
-                                </div>
+        <div class="modal-backdrop">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3>Book Your Appointment</h3>
+                    <button class="modal-close" @onclick="CloseModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    @if (selectedService != null)
+                    {
+                        <div class="selected-service-info">
+                            <h4>@selectedService.Name</h4>
+                            <p>@selectedService.Description</p>
+                            <div class="service-info-badges">
+                                <span class="badge price-badge">$@selectedService.Price.ToString("F2")</span>
+                                <span class="badge duration-badge">@selectedService.DurationInMinutes min</span>
                             </div>
-                        }
+                        </div>
+                    }
 
-                        <form>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Preferred Date *</label>
-                                    <input type="date" class="form-control" @bind="bookingForm.PreferredDate"
-                                           min="@DateTime.Today.ToString("yyyy-MM-dd")" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Preferred Time *</label>
-                                    <select class="form-control" @bind="bookingForm.PreferredTime" required>
-                                        <option value="">Select time...</option>
-                                        @foreach (var time in availableTimes)
-                                        {
-                                            <option value="@time">@time</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Special Requests or Notes</label>
-                                    <textarea class="form-control" rows="3" @bind="bookingForm.Notes"
-                                              placeholder="Any special requests, allergies, or preferences?"></textarea>
-                                </div>
+                    <form class="booking-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Preferred Date *</label>
+                                <input type="date" class="form-control" @bind="bookingForm.PreferredDate"
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")" required>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-outline-secondary" @onclick="CloseModal">Cancel</button>
-                        <button type="button" class="btn btn-primary" @onclick="SubmitBooking" disabled="@isSubmitting">
-                            @if (isSubmitting)
-                            {
-                                <span class="spinner-border spinner-border-sm me-2"></span>
-                            }
-                            else
-                            {
-                                <i class="fas fa-paper-plane me-2"></i>
-                            }
-                            Request Booking
-                        </button>
-                    </div>
+                            <div class="form-group">
+                                <label>Preferred Time *</label>
+                                <select class="form-control" @bind="bookingForm.PreferredTime" required>
+                                    <option value="">Select time...</option>
+                                    @foreach (var time in availableTimes)
+                                    {
+                                        <option value="@time">@time</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Special Requests or Notes</label>
+                            <textarea class="form-control" rows="3" @bind="bookingForm.Notes"
+                                      placeholder="Any special requests, allergies, or preferences?"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                    <button class="btn btn-primary" @onclick="SubmitBooking" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="loading-spinner small"></span>
+                        }
+                        Request Booking
+                    </button>
                 </div>
             </div>
         </div>
@@ -145,14 +117,12 @@
 
 @if (showSuccessMessage)
 {
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1070;">
-        <div class="toast show bg-success text-white border-0">
-            <div class="toast-body d-flex align-items-center">
-                <i class="fas fa-check-circle me-2 fa-lg"></i>
-                <div>
-                    <strong>Success!</strong><br>
-                    <small>Booking request submitted! We'll contact you within 24 hours to confirm your appointment.</small>
-                </div>
+    <div class="success-toast">
+        <div class="toast-content">
+            <span class="success-icon">✓</span>
+            <div>
+                <strong>Success!</strong><br>
+                <small>Booking request submitted! We'll contact you within 24 hours to confirm your appointment.</small>
             </div>
         </div>
     </div>
@@ -160,6 +130,7 @@
 
 @code {
     private List<Service> services = new();
+    private List<Service> displayServices = new();
     private bool isLoading = true;
     private bool showBookingModal = false;
     private bool showSuccessMessage = false;
@@ -181,16 +152,112 @@
         {
             using var context = DbFactory.CreateDbContext();
             services = await context.Service.OrderBy(s => s.Name).ToListAsync();
+
+            // If no services in database, use sample services
+            if (!services.Any())
+            {
+                displayServices = GetSampleServices();
+            }
+            else
+            {
+                displayServices = services;
+            }
         }
         catch (Exception ex)
         {
-            // Log error or show error message
             Console.WriteLine($"Error loading services: {ex.Message}");
+            // Fallback to sample services
+            displayServices = GetSampleServices();
         }
         finally
         {
             isLoading = false;
         }
+    }
+
+    private List<Service> GetSampleServices()
+    {
+        return new List<Service>
+        {
+            new Service
+            {
+                Id = 1,
+                Name = "Swedish Massage",
+                Description = "A classic full-body massage using gentle, flowing strokes to promote relaxation and relieve muscle tension. Perfect for stress relief and overall wellness.",
+                DurationInMinutes = 60,
+                Price = 120.00M
+            },
+            new Service
+            {
+                Id = 2,
+                Name = "Deep Tissue Massage",
+                Description = "Therapeutic massage focusing on deeper layers of muscle tissue. Ideal for chronic pain relief and muscle recovery.",
+                DurationInMinutes = 75,
+                Price = 150.00M
+            },
+            new Service
+            {
+                Id = 3,
+                Name = "Hot Stone Therapy",
+                Description = "Warm basalt stones are placed on key points of your body to melt away tension and promote deep relaxation and healing.",
+                DurationInMinutes = 90,
+                Price = 180.00M
+            },
+            new Service
+            {
+                Id = 4,
+                Name = "Aromatherapy Massage",
+                Description = "Combines the benefits of massage with the therapeutic properties of essential oils to enhance physical and emotional well-being.",
+                DurationInMinutes = 60,
+                Price = 135.00M
+            },
+            new Service
+            {
+                Id = 5,
+                Name = "European Facial",
+                Description = "A luxurious facial treatment that cleanses, exfoliates, and nourishes your skin, leaving it refreshed and glowing.",
+                DurationInMinutes = 75,
+                Price = 95.00M
+            },
+            new Service
+            {
+                Id = 6,
+                Name = "Anti-Aging Facial",
+                Description = "Advanced facial treatment targeting fine lines and age spots with specialized serums and techniques for youthful, radiant skin.",
+                DurationInMinutes = 90,
+                Price = 125.00M
+            },
+            new Service
+            {
+                Id = 7,
+                Name = "Body Wrap Treatment",
+                Description = "Detoxifying and hydrating full-body treatment that nourishes your skin while promoting relaxation and rejuvenation.",
+                DurationInMinutes = 75,
+                Price = 110.00M
+            },
+            new Service
+            {
+                Id = 8,
+                Name = "Couples Massage",
+                Description = "Romantic side-by-side massage experience for two people in our couples suite, perfect for special occasions.",
+                DurationInMinutes = 60,
+                Price = 280.00M
+            }
+        };
+    }
+
+    private string GetServiceIcon(string serviceName)
+    {
+        return serviceName.ToLower() switch
+        {
+            var name when name.Contains("massage") => "🌿",
+            var name when name.Contains("facial") => "✨",
+            var name when name.Contains("stone") => "🔥",
+            var name when name.Contains("aromatherapy") => "🌸",
+            var name when name.Contains("wrap") => "🧖‍♀️",
+            var name when name.Contains("couples") => "💕",
+            _ => "🧘‍♀️"
+        };
     }
 
     private void LoadAvailableTimes()
@@ -204,7 +271,7 @@
 
     private void ScheduleAppointment(int serviceId)
     {
-        selectedService = services.FirstOrDefault(s => s.Id == serviceId);
+        selectedService = displayServices.FirstOrDefault(s => s.Id == serviceId);
         if (selectedService != null)
         {
             bookingForm = new BookingRequest { ServiceId = serviceId };
@@ -236,16 +303,14 @@
         {
             using var context = DbFactory.CreateDbContext();
 
-            // Parse the appointment date and time
             var appointmentDateTime = CombineDateAndTime(bookingForm.PreferredDate, bookingForm.PreferredTime);
 
-            // Create the booking
             var booking = new Booking
             {
                 UserId = @UserSession.GetUserId()!,
                 ServiceId = bookingForm.ServiceId,
                 AppointmentDate = appointmentDateTime,
-                Status = "Requested", // Find better way to do this
+                Status = "Requested",
                 Notes = bookingForm.Notes ?? string.Empty
             };
 
@@ -259,7 +324,6 @@
 
             StateHasChanged();
 
-            // Hide success message after 5 seconds
             _ = Task.Delay(5000).ContinueWith(t =>
             {
                 showSuccessMessage = false;
@@ -268,9 +332,7 @@
         }
         catch (Exception ex)
         {
-            // Handle error - show error message
             Console.WriteLine($"Error submitting booking: {ex.Message}");
-            // You might want to show an error message to the user
         }
         finally
         {
@@ -279,19 +341,15 @@
         }
     }
 
-    // Helper method to combine date and time
     private DateTime CombineDateAndTime(DateTime date, string timeString)
     {
         if (TimeSpan.TryParse(ConvertTo24Hour(timeString), out var time))
         {
             return date.Date.Add(time);
         }
-
-        // Default to 9 AM if parsing fails
         return date.Date.AddHours(9);
     }
 
-    // Helper method to convert 12-hour format to 24-hour format
     private string ConvertTo24Hour(string time12Hour)
     {
         return time12Hour.ToUpper() switch
@@ -305,7 +363,7 @@
             "3:00 PM" => "15:00",
             "4:00 PM" => "16:00",
             "5:00 PM" => "17:00",
-            _ => "09:00" // Default fallback
+            _ => "09:00"
         };
     }
 
