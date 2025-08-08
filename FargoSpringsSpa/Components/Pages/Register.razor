@@ -2,6 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @using FargoSpringsSpa.Data
 @using FargoSpringsSpa.Models
+@using Microsoft.EntityFrameworkCore
 @inject NavigationManager NavigationManager
 @inject FargoSpringsSpaContext DbContext
 @rendermode InteractiveServer
@@ -15,6 +16,16 @@
     <div class="card p-4 mt-2">
         <EditForm Model="@registerModel" OnValidSubmit="HandleValidSubmit" FormName="registerForm">
             <DataAnnotationsValidator />
+
+            @if (usedEmail == true)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>An account with this email already exists.</strong>
+                    <a href="/login" class="alert-link">Please log in here.</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
             <ValidationSummary />
             <div class="mb-3">
                 <label for="nameInput" class="form-label">Full Name</label>
@@ -44,8 +55,20 @@
 @code {
     private RegisterViewModel registerModel = new();
 
+    bool usedEmail = false;
+
     private async Task HandleValidSubmit()
     {
+        usedEmail = false;
+        // Check if email already exists
+        var existingUser = await DbContext.User
+            .FirstOrDefaultAsync(u => u.Email == registerModel.Email);
+
+        if (existingUser != null)
+        {
+            usedEmail = true;
+            return; // Stop registration process
+        }
         // Password is not hashed right now. We can add this later if we have time
         var hashedPassword = registerModel.Password; // Replace with real hashing
         var newUser = new User
