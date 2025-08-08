@@ -3,7 +3,8 @@
 @using FargoSpringsSpa.Models
 @using FargoSpringsSpa.Data
 @inject IDbContextFactory<FargoSpringsSpaContext> DbFactory
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <PageTitle>Appointments - Fargo Springs Spa</PageTitle>
 
@@ -88,11 +89,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (!UserSession.IsLoggedIn)
+        if (!UserSession.IsLoggedIn) {
             return;
-
-        try
-        {
+        }
+       
             int userId = UserSession.GetUserId();
 
             using var db = await DbFactory.CreateDbContextAsync();
@@ -102,11 +102,6 @@
                 .Include(b => b.Service)
                 .OrderBy(b => b.AppointmentDate)
                 .ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine("Error loading appointments: " + ex.Message);
-        }
     }
 
     private async Task DeleteBooking(int bookingId)
