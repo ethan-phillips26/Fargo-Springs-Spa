@@ -19,11 +19,11 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Start Time:</label>
-                        <input type="time" value="@startTime.ToString("HH:mm")" @onchange="OnStartTimeChanged" class="form-control" />
+                        <input type="time" value="@startTime.ToString("HH:mm")" @onchange="StartTimeChanged" class="form-control" />
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">End Time:</label>
-                        <input type="time" value="@endTime.ToString("HH:mm")" @onchange="OnEndTimeChanged" class="form-control" />
+                        <input type="time" value="@endTime.ToString("HH:mm")" @onchange="EndTimeChanged" class="form-control" />
 
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                 @if (showMessage)
                 {
                     <div class="alert alert-success mt-3">
-                        Availability saved successfully!
+                        Availability updated successfully!
                     </div>
                 }
             </form>
@@ -132,6 +132,7 @@
 </div>
 
 @code {
+    // We can maybe update this to use the employees current schedule time, for now just default to 9 - 5
     private DateTime startTime = DateTime.Today.AddHours(9);
     private DateTime endTime = DateTime.Today.AddHours(17);
 
@@ -198,7 +199,7 @@
     }
 
     // Need to convert to string and back because values keep getting reset
-    private void OnStartTimeChanged(ChangeEventArgs e)
+    private void StartTimeChanged(ChangeEventArgs e)
     {
         if (TimeSpan.TryParse(e.Value?.ToString(), out var ts))
         {
@@ -206,7 +207,7 @@
         }
     }
 
-    private void OnEndTimeChanged(ChangeEventArgs e)
+    private void EndTimeChanged(ChangeEventArgs e)
     {
         if (TimeSpan.TryParse(e.Value?.ToString(), out var ts))
         {

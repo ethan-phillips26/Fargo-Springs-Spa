@@ -9,6 +9,7 @@
         public Service Service { get; set; }
         public int EmployeeId { get; set; }
         public DateTime AppointmentDate { get; set; }
+        // We should add status functionality in later if we have time, but for now it is never used
         public string Status { get; set; }
 
         public string Notes

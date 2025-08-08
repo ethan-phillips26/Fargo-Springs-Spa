@@ -1,8 +1,11 @@
 ﻿namespace FargoSpringsSpa.Models
 {
+    // Employee may not be needed anymore as we are no longer using the Bookings list.   
     public class Employee
     {
         public int Id { get; set; }
+
+        // Not using this list anymore, we are just searching for bookings with the userID as the employeeID
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public EmployeeAvailability Availability { get; set; }
     }
