@@ -5,6 +5,8 @@
     {
         public int Id { get; set; }
 
+        public int AvailabilityId { get; set; }
+
         // Not using this list anymore, we are just searching for bookings with the userID as the employeeID
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public EmployeeAvailability Availability { get; set; }
