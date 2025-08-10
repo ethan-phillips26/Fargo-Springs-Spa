@@ -17,6 +17,21 @@
         </div>
     </div>
 
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="m-0">Services <span class="badge bg-secondary" title="Total results">@services.Count</span></h3>
+        <div class="d-flex gap-2" style="min-width: 420px;">
+            <input class="form-control"
+                   placeholder="Search name or description"
+                   @bind="search"
+                   @bind:event="oninput"
+                   @bind:after="OnSearchChanged" />
+            @if (!string.IsNullOrWhiteSpace(search))
+            {
+                <button class="btn btn-outline-secondary" @onclick="ClearSearch">Clear</button>
+            }
+        </div>
+    </div>
+
     @if (isLoading)
     {
         <div class="text-center py-5">
@@ -30,8 +45,8 @@
     {
         <div class="text-center py-5">
             <i class="fas fa-spa fa-3x text-muted mb-3"></i>
-            <h4>No Services Available</h4>
-            <p class="text-muted">Please check back later for our service offerings.</p>
+            <h4>No Services Found</h4>
+            <p class="text-muted">Try clearing the search or checking back later.</p>
         </div>
     }
     else
@@ -183,27 +198,55 @@
     private DateTime selectedDate = DateTime.Today.AddDays(1);
     private string selectedTime = "";
     private string notes = "";
+    private string search = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
     }
 
+    private async Task OnSearchChanged()
+    {
+        await LoadData();
+    }
+
+    private async Task ClearSearch()
+    {
+        search = string.Empty;
+        await LoadData();
+    }
+
     private async Task LoadData()
     {
+        isLoading = true;
+
         using var context = DbFactory.CreateDbContext();
 
-        services = await context.Service.OrderBy(s => s.Name).ToListAsync();
+        IQueryable<Service> q = context.Service.AsNoTracking();
 
-        employees = await context.Employee
-            .Include(e => e.Availability)
-            .Where(e => e.Availability.IsActive)
-            .OrderBy(e => e.Id)
-            .ToListAsync();
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim();
+            q = q.Where(sv =>
+                EF.Functions.Like(sv.Name, $"%{s}%") ||
+                EF.Functions.Like(sv.Description, $"%{s}%"));
+        }
 
-        users = await context.User.ToListAsync();
+        services = await q.OrderBy(s => s.Name).ToListAsync();
+
+        if (employees.Count == 0)
+        {
+            employees = await context.Employee
+                .Include(e => e.Availability)
+                .Where(e => e.Availability.IsActive)
+                .OrderBy(e => e.Id)
+                .ToListAsync();
+
+            users = await context.User.ToListAsync();
+        }
 
         isLoading = false;
+        StateHasChanged();
     }
 
     private string GetEmployeeName(int employeeId)
@@ -211,7 +254,6 @@
         var user = users.FirstOrDefault(u => u.Id == employeeId);
         return user?.Name ?? $"Employee {employeeId}";
     }
-
 
     private void OpenBookingModal(int serviceId)
     {
@@ -354,6 +396,7 @@
         CloseModal();
         showSuccessMessage = true;
         StateHasChanged();
+  
         await Task.Delay(3000);
         showSuccessMessage = false;
         StateHasChanged();
