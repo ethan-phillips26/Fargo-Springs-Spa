@@ -24,17 +24,28 @@
                     <NavLink href="/admin" class="btn btn-warning shadow">Admin Panel</NavLink>
                     <NavLink href="/admin/messages" class="btn btn-warning shadow">Admin Messages</NavLink>
                 }
+
+                @if (UserSession.IsAdmin || UserSession.IsEmployee)
+                {
+                    <NavLink href="/admin/testimonials" class="btn btn-warning shadow">View Testimonials</NavLink>
+                }
+
+                @if (!UserSession.IsAdmin && !UserSession.IsEmployee)
+                {
+                    <NavLink href="/appointments" class="btn btn-primary shadow">My Appointments</NavLink>
+                }
+
+                <button class="btn btn-primary shadow me-2" @onclick="HandleLogout">Logout</button>
+
                 else if (UserSession.IsEmployee)
                 {
                     <NavLink href="/employee" class="btn btn-warning shadow">Employee Panel</NavLink>
                 }
-                else
-                {
-                    <NavLink href="/appointments" class="btn btn-primary shadow">My Appointments</NavLink>
-                }
+               
                 <button class="btn btn-primary shadow me-2" @onclick="HandleLogout">
                     Logout
                 </button>
+          
                 <span class="navbar-text text-white">
                     Hello, @UserSession.GetUserName()!
                 </span>

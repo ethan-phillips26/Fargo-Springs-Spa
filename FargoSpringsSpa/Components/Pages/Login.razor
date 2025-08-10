@@ -5,45 +5,53 @@
 @inject NavigationManager NavigationManager
 @inject FargoSpringsSpaContext DbContext
 @rendermode InteractiveServer
+
 <PageTitle>Login - Fargo Springs Spa</PageTitle>
+
 <link href="css/login.css" rel="stylesheet" />
 
-<div class="container d-flex flex-column justify-content-center align-items-center mt-5">
-    <div class="d-flex align-items-center mb-4 mt-5">
-        <h2 class="mb-0">Login!</h2>
+<div class="container-fluid py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 text-black fw-bold mb-3">Login</h1>
+            <p class="lead text-muted">Access your account to manage appointments and profile information</p>
+        </div>
     </div>
-    <div class="card p-4 mt-2">
-        <EditForm Model="@loginModel" OnValidSubmit="HandleValidSubmit" FormName="loginForm">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <div class="alert alert-danger" role="alert">
-                    @errorMessage
+
+    <div class="container d-flex flex-column justify-content-center align-items-center">
+        <div class="card p-4 mt-2 shadow-sm" style="max-width: 400px; width: 100%;">
+            <EditForm Model="@loginModel" OnValidSubmit="HandleValidSubmit" FormName="loginForm">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @errorMessage
+                    </div>
+                }
+                <div class="mb-3">
+                    <label for="emailInput" class="form-label">Email address</label>
+                    <InputText id="emailInput" type="email" class="form-control" @bind-Value="loginModel.Email" placeholder="Enter your email" />
+                    <ValidationMessage For="@(() => loginModel.Email)" />
                 </div>
-            }
-            <div class="mb-3">
-                <label for="emailInput" class="form-label">Email address</label>
-                <InputText id="emailInput" type="email" class="form-control" @bind-Value="loginModel.Email" placeholder="Enter your email" />
-                <ValidationMessage For="@(() => loginModel.Email)" />
-            </div>
-            <div class="mb-4">
-                <label for="passwordInput" class="form-label">Password</label>
-                <InputText id="passwordInput" type="password" class="form-control" @bind-Value="loginModel.Password" placeholder="Enter your password" />
-                <ValidationMessage For="@(() => loginModel.Password)" />
-            </div>
-            <button type="submit" class="btn btn-primary" disabled="@isLoading">
-                @if (isLoading)
-                {
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    <text>Logging in...</text>
-                }
-                else
-                {
-                    <text>Login</text>
-                }
-            </button>
-        </EditForm>
+                <div class="mb-4">
+                    <label for="passwordInput" class="form-label">Password</label>
+                    <InputText id="passwordInput" type="password" class="form-control" @bind-Value="loginModel.Password" placeholder="Enter your password" />
+                    <ValidationMessage For="@(() => loginModel.Password)" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Logging in...</text>
+                    }
+                    else
+                    {
+                        <text>Login</text>
+                    }
+                </button>
+            </EditForm>
+        </div>
     </div>
 </div>
 

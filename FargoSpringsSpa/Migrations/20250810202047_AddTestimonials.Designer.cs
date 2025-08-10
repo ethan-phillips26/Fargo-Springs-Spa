@@ -4,6 +4,7 @@ using FargoSpringsSpa.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FargoSpringsSpa.Migrations
 {
     [DbContext(typeof(FargoSpringsSpaContext))]
-    partial class FargoSpringsSpaContextModelSnapshot : ModelSnapshot
+    [Migration("20250810202047_AddTestimonials")]
+    partial class AddTestimonials
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,7 +36,7 @@ namespace FargoSpringsSpa.Migrations
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
@@ -280,9 +283,7 @@ namespace FargoSpringsSpa.Migrations
                 {
                     b.HasOne("FargoSpringsSpa.Models.Employee", null)
                         .WithMany("Bookings")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmployeeId");
 
                     b.HasOne("FargoSpringsSpa.Models.Service", "Service")
                         .WithMany()

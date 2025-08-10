@@ -16,5 +16,7 @@ namespace FargoSpringsSpa.Data
         public DbSet<FargoSpringsSpa.Models.Service> Service { get; set; } = default!;
         public DbSet<FargoSpringsSpa.Models.Review> Review { get; set; } = default!;
         public DbSet<FargoSpringsSpa.Models.ContactMessage> ContactMessages { get; set; } = default!;
+        public DbSet<FargoSpringsSpa.Models.Testimonial> Testimonials { get; set; } = default!;
+
     }
 }

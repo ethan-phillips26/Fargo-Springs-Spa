@@ -1,189 +1,151 @@
 ﻿@page "/testimonials"
-@using System.ComponentModel.DataAnnotations
+@using FargoSpringsSpa.Data
+@using FargoSpringsSpa.Models
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<FargoSpringsSpaContext> DbFactory
+@rendermode InteractiveServer
 
 <PageTitle>Testimonials - Fargo Springs Spa</PageTitle>
 
-<h1>What Our Clients Say</h1>
-
-<div class="testimonials-container">
-    @if (testimonials != null && testimonials.Any())
-    {
-        <div class="testimonials-grid">
-            @foreach (var testimonial in testimonials)
-            {
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p class="testimonial-text">"@testimonial.Message"</p>
-                        <div class="testimonial-author">
-                            <strong>@testimonial.ClientName</strong>
-                            @if (!string.IsNullOrEmpty(testimonial.Service))
-                            {
-                                <span class="service-mention"> - @testimonial.Service</span>
-                            }
-                        </div>
-                        <div class="testimonial-rating">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                <span class="star @(i <= testimonial.Rating ? "filled" : "")">★</span>
-                            }
-                        </div>
-                        <small class="testimonial-date">@testimonial.Date.ToString("MMMM yyyy")</small>
-                    </div>
-                </div>
-            }
+<div class="container-fluid py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 text-black fw-bold mb-3">What Our Clients Say</h1>
+            <p class="lead text-muted">Real feedback from real guests—our top five highlights below</p>
         </div>
+    </div>
+</div>
+
+<link href="css/adminMessages.css?v=2" rel="stylesheet" />
+<link href="css/testimonials.min.css?v=1" rel="stylesheet" />
+
+<div class="admin-wrap">
+    <div class="header-row">
+        <h3>Top Testimonials <span class="badge bg-secondary" title="Total results">@((topFive?.Count ?? 0))</span></h3>
+    </div>
+
+    @if (topFive is null)
+    {
+        <div class="empty">Loading testimonials...</div>
+    }
+    else if (topFive.Count == 0)
+    {
+        <div class="empty">No testimonials yet.</div>
     }
     else
     {
-        <p>Loading testimonials...</p>
+        <div class="list">
+            @foreach (var t in topFive)
+            {
+                <article class="pill-card">
+                    <div class="pill-body">
+                        <div class="pill-top">
+                            <div>
+                                <div class="pill-name">
+                                    @t.ClientName
+                                    @if (!string.IsNullOrWhiteSpace(t.Service))
+                                    {
+                                        <span class="pill-email">· @t.Service</span>
+                                    }
+                                </div>
+                                <div class="pill-subject">
+                                    <span class="stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <span class="star @(i <= t.Rating ? "filled" : "")">★</span>
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="pill-date">@t.Date.ToLocalTime().ToString("g")</div>
+                        </div>
+                        <div class="pill-message" title="@t.Message">@t.Message</div>
+                    </div>
+                </article>
+            }
+        </div>
     }
 </div>
 
 <div class="add-testimonial-section">
     <h2>Share Your Experience</h2>
-    <EditForm Model="newTestimonial" OnValidSubmit="AddTestimonial">
+    <EditForm Model="newTestimonial" OnValidSubmit="AddTestimonial" FormName="AddTestimonialForm">
         <DataAnnotationsValidator />
-        <ValidationSummary />
+        <ValidationSummary class="validation-summary" />
 
         <div class="form-group">
-            <label for="clientName">Your Name:</label>
-            <InputText id="clientName" @bind-Value="newTestimonial.ClientName" class="form-control" />
+            <label>Your Name:</label>
+            <InputText class="form-control" @bind-Value="newTestimonial.ClientName" />
             <ValidationMessage For="@(() => newTestimonial.ClientName)" />
         </div>
 
         <div class="form-group">
-            <label for="service">Service Received (optional):</label>
-            <InputSelect id="service" @bind-Value="newTestimonial.Service" class="form-control">
+            <label>Service Received (optional):</label>
+            <InputSelect class="form-control" @bind-Value="newTestimonial.Service">
                 <option value="">Select a service</option>
-                <option value="Massage Therapy">Massage Therapy</option>
-                <option value="Facial Treatment">Facial Treatment</option>
-                <option value="Hot Stone Therapy">Hot Stone Therapy</option>
-                <option value="Aromatherapy">Aromatherapy</option>
-                <option value="Body Wrap">Body Wrap</option>
+                <option>Massage Therapy</option>
+                <option>Facial Treatment</option>
+                <option>Hot Stone Therapy</option>
+                <option>Aromatherapy</option>
+                <option>Body Wrap</option>
             </InputSelect>
         </div>
 
         <div class="form-group">
-            <label for="rating">Rating:</label>
-            <InputSelect id="rating" @bind-Value="newTestimonial.Rating" class="form-control">
-                <option value="5">5 Stars - Excellent</option>
-                <option value="4">4 Stars - Very Good</option>
-                <option value="3">3 Stars - Good</option>
-                <option value="2">2 Stars - Fair</option>
-                <option value="1">1 Star - Poor</option>
+            <label>Rating:</label>
+            <InputSelect class="form-control" @bind-Value="newTestimonial.Rating">
+                <option value="5">5 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="2">2 Stars</option>
+                <option value="1">1 Star</option>
             </InputSelect>
             <ValidationMessage For="@(() => newTestimonial.Rating)" />
         </div>
 
         <div class="form-group">
-            <label for="message">Your Testimonial:</label>
-            <InputTextArea id="message" @bind-Value="newTestimonial.Message" class="form-control" rows="4" />
+            <label>Your Testimonial:</label>
+            <InputTextArea class="form-control" rows="4" @bind-Value="newTestimonial.Message" />
             <ValidationMessage For="@(() => newTestimonial.Message)" />
         </div>
 
         <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
-            @if (isSubmitting)
-            {
-                <text>Submitting...</text>
-            }
-            else
-            {
-                <text>Submit Testimonial</text>
-            }
+            @(isSubmitting ? "Submitting..." : "Submit Testimonial")
         </button>
     </EditForm>
 </div>
 
 @code {
-    private List<Testimonial> testimonials = new();
+    private List<Testimonial>? topFive;
     private Testimonial newTestimonial = new();
-    private bool isSubmitting = false;
+    private bool isSubmitting;
 
-    protected override async Task OnInitializedAsync()
-    {
-        LoadSampleTestimonials();
-    }
+    protected override async Task OnInitializedAsync() => await LoadTopFive();
 
-    private void LoadSampleTestimonials()
+    private async Task LoadTopFive()
     {
-        testimonials = new List<Testimonial>
-        {
-            new Testimonial
-            {
-                ClientName = "Sarah M.",
-                Message = "The hot stone massage was absolutely incredible. I felt so relaxed and refreshed. The staff was professional and the atmosphere was perfect.",
-                Service = "Hot Stone Therapy",
-                Rating = 5,
-                Date = DateTime.Now.AddMonths(-2)
-            },
-            new Testimonial
-            {
-                ClientName = "Mike J.",
-                Message = "Best facial I've ever had! My skin looks and feels amazing. Will definitely be coming back.",
-                Service = "Facial Treatment",
-                Rating = 5,
-                Date = DateTime.Now.AddMonths(-1)
-            },
-            new Testimonial
-            {
-                ClientName = "Jennifer K.",
-                Message = "The aromatherapy session was so calming. Exactly what I needed after a stressful week at work.",
-                Service = "Aromatherapy",
-                Rating = 4,
-                Date = DateTime.Now.AddDays(-14)
-            },
-            new Testimonial
-            {
-                ClientName = "David R.",
-                Message = "Great service and wonderful ambiance. The massage therapy helped with my back pain significantly.",
-                Service = "Massage Therapy",
-                Rating = 5,
-                Date = DateTime.Now.AddDays(-10)
-            }
-        };
+        using var db = await DbFactory.CreateDbContextAsync();
+        topFive = await db.Testimonials
+            .AsNoTracking()
+            .OrderByDescending(t => t.Rating)
+            .ThenByDescending(t => t.Date)
+            .Take(5)
+            .ToListAsync();
     }
 
     private async Task AddTestimonial()
     {
         isSubmitting = true;
 
-        
-        await Task.Delay(1000);
+        using var db = await DbFactory.CreateDbContextAsync();
+        newTestimonial.Date = DateTime.Now;
+        db.Testimonials.Add(newTestimonial);
+        await db.SaveChangesAsync();
 
-        
-        var testimonial = new Testimonial
-        {
-            ClientName = newTestimonial.ClientName,
-            Message = newTestimonial.Message,
-            Service = newTestimonial.Service,
-            Rating = newTestimonial.Rating,
-            Date = DateTime.Now
-        };
-
-        testimonials.Insert(0, testimonial); // Add to beginning of list
-
-        // Reset form
         newTestimonial = new Testimonial();
         isSubmitting = false;
 
-        StateHasChanged(); // Refresh the UI
-    }
-
-    public class Testimonial
-    {
-        [Required(ErrorMessage = "Please enter your name")]
-        [StringLength(100, ErrorMessage = "Name must be less than 100 characters")]
-        public string ClientName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Please share your experience")]
-        [StringLength(1000, ErrorMessage = "Testimonial must be less than 1000 characters")]
-        public string Message { get; set; } = string.Empty;
-
-        public string Service { get; set; } = string.Empty;
-
-        [Range(1, 5, ErrorMessage = "Please select a rating")]
-        public int Rating { get; set; } = 5;
-
-        public DateTime Date { get; set; } = DateTime.Now;
+        await LoadTopFive();
+        StateHasChanged();
     }
 }
