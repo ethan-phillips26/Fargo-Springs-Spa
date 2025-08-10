@@ -1,0 +1,45 @@
+﻿.about-hero {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about-box {
+    background-color: #e8f0ef;
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
+}
+
+    .about-box:hover {
+        background-color: #d0e3e1;
+    }
+
+.about-tight p {
+    margin-bottom: 0.5rem;
+}
+
+.about-stat {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.about-section {
+    margin-bottom: 3rem;
+}
+
+.about-guide-box {
+    background-color: #8BA49A;
+    border-radius: 50px;
+    padding: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+    .about-guide-box:hover {
+        background-color: #799185;
+    }
+
+    .about-guide-box h5,
+    .about-guide-box p {
+        color: #fff;
+        margin-bottom: 0;
+    }
