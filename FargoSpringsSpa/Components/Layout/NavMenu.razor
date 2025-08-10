@@ -15,31 +15,32 @@
             <NavLink href="/services" class="btn btn-primary shadow">Services</NavLink>
             <NavLink href="/testimonials" class="btn btn-primary shadow">Testimonials</NavLink>
             <NavLink href="/contact" class="btn btn-primary shadow">Contact</NavLink>
+            <NavLink href="/about" class="btn btn-primary shadow">About</NavLink>
 
             @if (UserSession.IsLoggedIn)
             {
-                <!-- Show user specific options when logged in -->
                 @if (UserSession.IsAdmin)
                 {
                     <NavLink href="/admin" class="btn btn-warning shadow">Admin Panel</NavLink>
                     <NavLink href="/admin/messages" class="btn btn-warning shadow">Admin Messages</NavLink>
                 }
+                else if (UserSession.IsEmployee)
+                {
+                    <NavLink href="/employee" class="btn btn-warning shadow">Employee Panel</NavLink>
+                }
                 else
                 {
                     <NavLink href="/appointments" class="btn btn-primary shadow">My Appointments</NavLink>
                 }
-
                 <button class="btn btn-primary shadow me-2" @onclick="HandleLogout">
                     Logout
                 </button>
-
                 <span class="navbar-text text-white">
                     Hello, @UserSession.GetUserName()!
                 </span>
             }
             else
             {
-                <!-- Show login/register when not logged in -->
                 <NavLink href="/login" class="btn btn-primary shadow">Login</NavLink>
                 <NavLink href="/register" class="btn btn-primary shadow">Register</NavLink>
             }
