@@ -1,0 +1,84 @@
+﻿@page "/admin/messages"
+@using FargoSpringsSpa.Data
+@using FargoSpringsSpa.Models
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<FargoSpringsSpaContext> DbFactory
+@rendermode InteractiveServer
+
+<link href="css/adminMessages.css?v=2" rel="stylesheet" />
+
+<div class="admin-wrap">
+    <div class="header-row">
+        <h3>Contact Messages <span class="badge bg-secondary" title="Total results">@items.Count</span></h3>
+        <div class="search">
+            <input class="form-control"
+                   placeholder="Search name, email, subject, or message"
+                   @bind="search"
+                   @bind:event="oninput"
+                   @bind:after="OnSearchChanged" />
+            @if (!string.IsNullOrWhiteSpace(search))
+            {
+                <button class="btn btn-outline-secondary" @onclick="ClearSearch">Clear</button>
+            }
+        </div>
+    </div>
+
+    @if (items.Count == 0)
+    {
+        <div class="empty">No messages found.</div>
+    }
+    else
+    {
+        <div class="list">
+            @foreach (var m in items)
+            {
+                <article class="pill-card">
+                    <div class="pill-body">
+                        <div class="pill-top">
+                            <div>
+                                <div class="pill-name">
+                                    @m.Name <span class="pill-email">· @m.Email</span>
+                                </div>
+                                <div class="pill-subject">@m.Subject</div>
+                            </div>
+                            <div class="pill-date">@m.CreatedAtUtc.ToLocalTime().ToString("g")</div>
+                        </div>
+                        <div class="pill-message" title="@m.Message">@m.Message</div>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string search = string.Empty;
+    private List<ContactMessage> items = new();
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+    private async Task OnSearchChanged() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        IQueryable<ContactMessage> q = db.ContactMessages.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim();
+            q = q.Where(m =>
+                EF.Functions.Like(m.Name, $"%{s}%") ||
+                EF.Functions.Like(m.Email, $"%{s}%") ||
+                EF.Functions.Like(m.Subject, $"%{s}%") ||
+                EF.Functions.Like(m.Message, $"%{s}%"));
+        }
+
+        items = await q.OrderByDescending(m => m.CreatedAtUtc).ToListAsync();
+    }
+
+    private async Task ClearSearch()
+    {
+        search = string.Empty;
+        await LoadAsync();
+    }
+}

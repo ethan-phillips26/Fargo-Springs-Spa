@@ -22,6 +22,7 @@
                 @if (UserSession.IsAdmin)
                 {
                     <NavLink href="/admin" class="btn btn-warning shadow">Admin Panel</NavLink>
+                    <NavLink href="/admin/messages" class="btn btn-warning shadow">Admin Messages</NavLink>
                 }
                 else if (UserSession.IsEmployee)
                 {
