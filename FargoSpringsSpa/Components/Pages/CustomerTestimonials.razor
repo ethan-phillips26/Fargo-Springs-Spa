@@ -1,0 +1,92 @@
+﻿@page "/admin/testimonials"
+@using FargoSpringsSpa.Data
+@using FargoSpringsSpa.Models
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<FargoSpringsSpaContext> DbFactory
+@rendermode InteractiveServer
+
+<link href="css/adminMessages.css?v=2" rel="stylesheet" />
+
+<div class="admin-wrap">
+    <div class="header-row">
+        <h3>Testimonials <span class="badge bg-secondary" title="Total results">@items.Count</span></h3>
+        <div class="search">
+            <input class="form-control"
+                   placeholder="Search name, service, or message"
+                   @bind="search"
+                   @bind:event="oninput"
+                   @bind:after="OnSearchChanged" />
+            @if (!string.IsNullOrWhiteSpace(search))
+            {
+                <button class="btn btn-outline-secondary" @onclick="ClearSearch">Clear</button>
+            }
+        </div>
+    </div>
+
+    @if (items.Count == 0)
+    {
+        <div class="empty">No testimonials found.</div>
+    }
+    else
+    {
+        <div class="list">
+            @foreach (var t in items)
+            {
+                <article class="pill-card">
+                    <div class="pill-body">
+                        <div class="pill-top">
+                            <div>
+                                <div class="pill-name">
+                                    @t.ClientName
+                                    @if (!string.IsNullOrWhiteSpace(t.Service))
+                                    {
+                                        <span class="pill-email">· @t.Service</span>
+                                    }
+                                </div>
+                                <div class="pill-subject">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span style="color:@(i <= t.Rating ? "#3B6255" : "#4f6461")">★</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="pill-date">@t.Date.ToLocalTime().ToString("g")</div>
+                        </div>
+                        <div class="pill-message" title="@t.Message">@t.Message</div>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string search = string.Empty;
+    private List<Testimonial> items = new();
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+    private async Task OnSearchChanged() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        IQueryable<Testimonial> q = db.Testimonials.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim();
+            q = q.Where(t =>
+                EF.Functions.Like(t.ClientName, $"%{s}%") ||
+                EF.Functions.Like(t.Service, $"%{s}%") ||
+                EF.Functions.Like(t.Message, $"%{s}%"));
+        }
+
+        items = await q.OrderByDescending(t => t.Date).ToListAsync();
+    }
+
+    private async Task ClearSearch()
+    {
+        search = string.Empty;
+        await LoadAsync();
+    }
+}

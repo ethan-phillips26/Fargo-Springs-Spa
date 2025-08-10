@@ -11,97 +11,107 @@
 
 <link href="css/contact.css" rel="stylesheet" />
 
-<div class="container my-5">
-    <h2 class="text-center mb-5">Contact Us!</h2>
-
-    <div class="d-flex flex-column gap-4 mb-5">
-        <div class="contact-pill d-flex align-items-center p-3 shadow-sm">
-            <img src="images/profile1.jpg" class="profile-img me-3" alt="Jane Smith" />
-            <div>
-                <h5 class="mb-1">Jane Smith</h5>
-                <p class="mb-0 text-muted">Front Desk Manager</p>
-                <p class="mb-0"><strong>Email:</strong> jane@fargospringsspa.com</p>
-            </div>
-        </div>
-
-        <div class="contact-pill d-flex align-items-center p-3 shadow-sm">
-            <img src="images/profile2.jpg" class="profile-img me-3" alt="Carla Ruiz" />
-            <div>
-                <h5 class="mb-1">Carla Ruiz</h5>
-                <p class="mb-0 text-muted">Massage Therapist</p>
-                <p class="mb-0"><strong>Email:</strong> carla@fargospringsspa.com</p>
-            </div>
-        </div>
-
-        <div class="contact-pill d-flex align-items-center p-3 shadow-sm">
-            <img src="images/profile3.jpg" class="profile-img me-3" alt="Maya Patel" />
-            <div>
-                <h5 class="mb-1">Maya Patel</h5>
-                <p class="mb-0 text-muted">Esthetician</p>
-                <p class="mb-0"><strong>Email:</strong> maya@fargospringsspa.com</p>
-            </div>
+<div class="container-fluid py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 text-black fw-bold mb-3">Contact Us</h1>
+            <p class="lead text-muted">We’d love to hear from you — get in touch with our friendly staff</p>
         </div>
     </div>
 
-    <section class="contact-pill p-4 shadow-sm mb-5">
-        <h3 class="h4 mb-3 text-center">Send us a message</h3>
-
-        @if (submitted)
-        {
-            <div class="alert alert-success shadow-sm" role="alert">
-                @submitMessage
-            </div>
-        }
-
-        <EditForm Model="@form" OnValidSubmit="@HandleValidSubmit" FormName="ContactForm">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger mb-3" />
-
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label">Name</label>
-                    <InputText class="form-control" @bind-Value="form.Name" />
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Email</label>
-                    <InputText class="form-control" @bind-Value="form.Email" />
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Subject</label>
-                    <InputText class="form-control" @bind-Value="form.Subject" />
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Message</label>
-                    <InputTextArea class="form-control" @bind-Value="form.Message" rows="5" />
-                </div>
-                <div class="col-12 text-center">
-                    <button type="submit" class="btn btn-primary shadow btn-lg">Send Message</button>
+    <div class="container">
+        <!-- Staff contacts -->
+        <div class="d-flex flex-column gap-4 mb-5">
+            <div class="contact-pill d-flex align-items-center p-3 shadow-sm">
+                <img src="images/profile1.jpg" class="profile-img me-3" alt="Jane Smith" />
+                <div>
+                    <h5 class="mb-1">Jane Smith</h5>
+                    <p class="mb-0 text-muted">Front Desk Manager</p>
+                    <p class="mb-0"><strong>Email:</strong> jane@fargospringsspa.com</p>
                 </div>
             </div>
-        </EditForm>
-    </section>
 
-    <section class="contact-pill p-4 shadow-sm">
-        <h3 class="h4 mb-3 text-center">Find Us</h3>
+            <div class="contact-pill d-flex align-items-center p-3 shadow-sm">
+                <img src="images/profile2.jpg" class="profile-img me-3" alt="Carla Ruiz" />
+                <div>
+                    <h5 class="mb-1">Carla Ruiz</h5>
+                    <p class="mb-0 text-muted">Massage Therapist</p>
+                    <p class="mb-0"><strong>Email:</strong> carla@fargospringsspa.com</p>
+                </div>
+            </div>
 
-        <div class="map-container shadow-sm">
-            <iframe width="100%"
-                    height="100%"
-                    style="border:0;"
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps?q=Fargo%20Springs%20Spa%20Fargo%20ND&output=embed">
-            </iframe>
+            <div class="contact-pill d-flex align-items-center p-3 shadow-sm">
+                <img src="images/profile3.jpg" class="profile-img me-3" alt="Maya Patel" />
+                <div>
+                    <h5 class="mb-1">Maya Patel</h5>
+                    <p class="mb-0 text-muted">Esthetician</p>
+                    <p class="mb-0"><strong>Email:</strong> maya@fargospringsspa.com</p>
+                </div>
+            </div>
         </div>
 
-        <div class="text-center mt-3">
-            <a class="btn btn-primary shadow btn-lg"
-               href="https://www.google.com/maps/dir/?api=1&destination=Fargo+Springs+Spa+Fargo+ND"
-               target="_blank" rel="noopener">
-                Get Directions
-            </a>
-        </div>
-    </section>
+        <!-- Contact form -->
+        <section class="contact-pill p-4 shadow-sm mb-5">
+            <h3 class="h4 mb-3 text-center">Send us a message</h3>
+
+            @if (submitted)
+            {
+                <div class="alert alert-success shadow-sm" role="alert">
+                    @submitMessage
+                </div>
+            }
+
+            <EditForm Model="@form" OnValidSubmit="@HandleValidSubmit" FormName="ContactForm">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Name</label>
+                        <InputText class="form-control" @bind-Value="form.Name" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <InputText class="form-control" @bind-Value="form.Email" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Subject</label>
+                        <InputText class="form-control" @bind-Value="form.Subject" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Message</label>
+                        <InputTextArea class="form-control" @bind-Value="form.Message" rows="5" />
+                    </div>
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary shadow btn-lg">Send Message</button>
+                    </div>
+                </div>
+            </EditForm>
+        </section>
+
+        <!-- Map section -->
+        <section class="contact-pill p-4 shadow-sm">
+            <h3 class="h4 mb-3 text-center">Find Us</h3>
+
+            <div class="map-container shadow-sm">
+                <iframe width="100%"
+                        height="100%"
+                        style="border:0;"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=North%20Dakota%20State%20University%20Fargo%20ND&output=embed">
+                </iframe>
+            </div>
+
+            <div class="text-center mt-3">
+                <a class="btn btn-primary shadow btn-lg"
+                   href="https://www.google.com/maps/dir/?api=1&destination=North+Dakota+State+University+Fargo+ND"
+                   target="_blank" rel="noopener">
+                    Get Directions
+                </a>
+            </div>
+        </section>
+    </div>
 </div>
 
 @code {

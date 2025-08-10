@@ -10,6 +10,8 @@
 
         public static bool IsCustomer => CurrentUser?.Role == "Customer";
 
+        public static bool IsEmployee => CurrentUser?.Role == "Employee";
+
         public static void Login(User user)
         {
             CurrentUser = user;
