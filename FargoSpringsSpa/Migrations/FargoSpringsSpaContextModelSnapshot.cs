@@ -100,12 +100,9 @@ namespace FargoSpringsSpa.Migrations
             modelBuilder.Entity("FargoSpringsSpa.Models.Employee", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AvailabilityId")
+                    b.Property<int?>("AvailabilityId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -118,10 +115,7 @@ namespace FargoSpringsSpa.Migrations
             modelBuilder.Entity("FargoSpringsSpa.Models.EmployeeAvailability", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
@@ -305,9 +299,7 @@ namespace FargoSpringsSpa.Migrations
                 {
                     b.HasOne("FargoSpringsSpa.Models.EmployeeAvailability", "Availability")
                         .WithMany()
-                        .HasForeignKey("AvailabilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AvailabilityId");
 
                     b.Navigation("Availability");
                 });
