@@ -35,8 +35,6 @@
                     <NavLink href="/appointments" class="btn btn-primary shadow">My Appointments</NavLink>
                 }
 
-                <button class="btn btn-primary shadow me-2" @onclick="HandleLogout">Logout</button>
-
                 else if (UserSession.IsEmployee)
                 {
                     <NavLink href="/employee" class="btn btn-warning shadow">Employee Panel</NavLink>

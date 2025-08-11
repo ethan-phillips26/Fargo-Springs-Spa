@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FargoSpringsSpa.Migrations
 {
     [DbContext(typeof(FargoSpringsSpaContext))]
-    [Migration("20250805051709_mssql.local_migration_817")]
-    partial class mssqllocal_migration_817
+    [Migration("20250811050553_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,9 @@ namespace FargoSpringsSpa.Migrations
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -52,11 +55,104 @@ namespace FargoSpringsSpa.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmployeeId");
+
                     b.HasIndex("ServiceId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Booking");
+                });
+
+            modelBuilder.Entity("FargoSpringsSpa.Models.ContactMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactMessages");
+                });
+
+            modelBuilder.Entity("FargoSpringsSpa.Models.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AvailabilityId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AvailabilityId");
+
+                    b.ToTable("Employee");
+                });
+
+            modelBuilder.Entity("FargoSpringsSpa.Models.EmployeeAvailability", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("Friday")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Monday")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Saturday")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("Sunday")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Thursday")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Tuesday")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Wednesday")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmployeeAvailability");
                 });
 
             modelBuilder.Entity("FargoSpringsSpa.Models.Review", b =>
@@ -114,6 +210,40 @@ namespace FargoSpringsSpa.Migrations
                     b.ToTable("Service");
                 });
 
+            modelBuilder.Entity("FargoSpringsSpa.Models.Testimonial", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Service")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Testimonials");
+                });
+
             modelBuilder.Entity("FargoSpringsSpa.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -145,8 +275,14 @@ namespace FargoSpringsSpa.Migrations
 
             modelBuilder.Entity("FargoSpringsSpa.Models.Booking", b =>
                 {
-                    b.HasOne("FargoSpringsSpa.Models.Service", "Service")
+                    b.HasOne("FargoSpringsSpa.Models.Employee", null)
                         .WithMany("Bookings")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FargoSpringsSpa.Models.Service", "Service")
+                        .WithMany()
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -162,6 +298,15 @@ namespace FargoSpringsSpa.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FargoSpringsSpa.Models.Employee", b =>
+                {
+                    b.HasOne("FargoSpringsSpa.Models.EmployeeAvailability", "Availability")
+                        .WithMany()
+                        .HasForeignKey("AvailabilityId");
+
+                    b.Navigation("Availability");
+                });
+
             modelBuilder.Entity("FargoSpringsSpa.Models.Review", b =>
                 {
                     b.HasOne("FargoSpringsSpa.Models.User", "User")
@@ -173,7 +318,7 @@ namespace FargoSpringsSpa.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FargoSpringsSpa.Models.Service", b =>
+            modelBuilder.Entity("FargoSpringsSpa.Models.Employee", b =>
                 {
                     b.Navigation("Bookings");
                 });

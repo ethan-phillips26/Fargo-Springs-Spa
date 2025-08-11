@@ -8,6 +8,25 @@ public class SeedData
         using var context = new FargoSpringsSpaContext(
         serviceProvider.GetRequiredService<
         DbContextOptions<FargoSpringsSpaContext>>());
+
+        if (!context.EmployeeAvailability.Any())
+        {
+            context.EmployeeAvailability.Add(new EmployeeAvailability
+            {
+                Id = 2,
+                StartTime = new TimeOnly(9, 0),
+                EndTime = new TimeOnly(17, 0),
+                Monday = true,
+                Tuesday = true,
+                Wednesday = true,
+                Thursday = true,
+                Friday = true,
+                Saturday = false,
+                Sunday = false,
+                IsActive = true
+            });
+            context.SaveChanges();
+        }
         if (!context.User.Any())
         {
             context.User.AddRange(
@@ -44,29 +63,12 @@ public class SeedData
             context.Employee.Add(new Employee
             {
                 Id = 2,
-                AvailabilityId = 2,
+                AvailabilityId = 2
             });
             context.SaveChanges();
         }
 
-        if (!context.EmployeeAvailability.Any())
-        {
-            context.EmployeeAvailability.Add(new EmployeeAvailability
-            {
-                Id = 2,
-                StartTime = new TimeOnly(9, 0),
-                EndTime = new TimeOnly(17, 0),
-                Monday = true,
-                Tuesday = true,
-                Wednesday = true,
-                Thursday = true,
-                Friday = true,
-                Saturday = false,
-                Sunday = false,
-                IsActive = true
-            });
-            context.SaveChanges();
-        }
+
 
         if (!context.Service.Any())
         {
