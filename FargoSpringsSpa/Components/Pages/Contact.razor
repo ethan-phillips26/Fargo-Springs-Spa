@@ -144,13 +144,13 @@
 
     public class ContactForm
     {
-        [Required, StringLength(1)]
+        [Required, StringLength(80)]
         public string Name { get; set; } = string.Empty;
 
-        [Required, EmailAddress, StringLength(1)]
+        [Required, EmailAddress, StringLength(120)]
         public string Email { get; set; } = string.Empty;
 
-        [Required, StringLength(1)]
+        [Required, StringLength(120)]
         public string Subject { get; set; } = string.Empty;
 
         [Required, StringLength(2000, MinimumLength = 1)]
