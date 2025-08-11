@@ -90,6 +90,7 @@
     protected override async Task OnInitializedAsync()
     {
         if (!UserSession.IsLoggedIn) {
+            // Is this needed? We are checking if a user is logged in before this method is called.
             return;
         }
        

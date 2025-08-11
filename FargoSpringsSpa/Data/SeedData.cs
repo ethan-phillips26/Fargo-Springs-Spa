@@ -9,6 +9,7 @@ public class SeedData
         serviceProvider.GetRequiredService<
         DbContextOptions<FargoSpringsSpaContext>>());
 
+        // Moved this above employee for database changes to work. We really should remove employee model.
         if (!context.EmployeeAvailability.Any())
         {
             context.EmployeeAvailability.Add(new EmployeeAvailability

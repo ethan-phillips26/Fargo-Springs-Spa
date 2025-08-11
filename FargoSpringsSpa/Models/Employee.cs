@@ -1,11 +1,14 @@
-﻿namespace FargoSpringsSpa.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FargoSpringsSpa.Models
 {
     // Employee may not be needed anymore as we are no longer using the Bookings list.   
     public class Employee
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public int AvailabilityId { get; set; }
+        public int? AvailabilityId { get; set; }
 
         // Not using this list anymore, we are just searching for bookings with the userID as the employeeID
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
@@ -14,6 +17,7 @@
 
     public class EmployeeAvailability
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         // Work the same hours everyday, maybe add differnt hours if time
